@@ -27,6 +27,8 @@ import static org.hamcrest.Matchers.hasSize;
 
 import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
+
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -176,7 +178,7 @@ public class AccountsBulkPayWaiveTransferAPITests extends ActionsAPITests {
 
   private void return422WhenAccountIsEffectivelyClosed(double remainingAmount) {
     Account closedAccount = createAccount(FIRST_ACCOUNT_ID, remainingAmount)
-      .withAmount(remainingAmount + 1)
+      .withAmount(new BigDecimal(remainingAmount + 1))
       .withStatus(new Status().withName(FeeFineStatus.CLOSED.getValue()));
 
     postAccount(closedAccount);
@@ -330,7 +332,7 @@ public class AccountsBulkPayWaiveTransferAPITests extends ActionsAPITests {
         expectedActionAmount, expectedRemainingAmount2)))));
   }
 
-  private Account createAccount(String accountId, double amount) {
+  private Account createAccount(String accountId, Double amount) {
     return new Account()
       .withId(accountId)
       .withOwnerId(randomId())
@@ -342,8 +344,8 @@ public class AccountsBulkPayWaiveTransferAPITests extends ActionsAPITests {
       .withFeeFineId(randomId())
       .withFeeFineType("book lost")
       .withFeeFineOwner("owner")
-      .withAmount(amount)
-      .withRemaining(amount)
+      .withAmount(new BigDecimal(amount.toString()))
+      .withRemaining(new BigDecimal(amount.toString()))
       .withPaymentStatus(new PaymentStatus().withName("Outstanding"))
       .withStatus(new Status().withName("Open"));
   }

@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +85,7 @@ public class AccountsAPITest extends ApiTests {
       .statusCode(HttpStatus.SC_OK)
       .contentType(JSON);
 
-    Account accountToPut = accountToPost.withRemaining(4.55);
+    Account accountToPut = accountToPost.withRemaining(new BigDecimal("4.55"));
 
     // put account
     accountsClient.update(accountId, accountToPut)
@@ -100,7 +101,7 @@ public class AccountsAPITest extends ApiTests {
 
     Account accountToDelete = new Account()
       .withId(accountId)
-      .withRemaining(0.00);
+      .withRemaining(new BigDecimal("0.00"));
 
     assertBalanceChangedEventPublished(accountToDelete);
   }
@@ -315,8 +316,8 @@ public class AccountsAPITest extends ApiTests {
       .withFeeFineId(randomId())
       .withFeeFineType("book lost")
       .withFeeFineOwner("owner")
-      .withAmount(7.77)
-      .withRemaining(3.33)
+      .withAmount(new BigDecimal("7.77"))
+      .withRemaining(new BigDecimal("3.33"))
       .withPaymentStatus(new PaymentStatus().withName("Outstanding"))
       .withStatus(new Status().withName("Open"));
   }

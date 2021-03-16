@@ -31,6 +31,7 @@ import org.folio.rest.jaxrs.model.DefaultActionRequest;
 import org.folio.rest.jaxrs.model.DefaultBulkActionRequest;
 import org.hamcrest.Matcher;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -85,7 +86,7 @@ public class LogEventMatcher {
   }
 
   public static Matcher<String> cancelledActionLogEventPayload(String userId, String itemId, String servicePointId, String source,
-    String feeFineId, String feeFineOwner, String loanId, double amount, String comments) {
+    String feeFineId, String feeFineOwner, String loanId, BigDecimal amount, String comments) {
 
     return allOf(Arrays.asList(
       hasJsonPath(USER_ID.value(), is(userId)),

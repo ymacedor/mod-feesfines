@@ -25,6 +25,8 @@ import static org.hamcrest.Matchers.hasSize;
 
 import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
+
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpStatus;
 import org.awaitility.Awaitility;
@@ -106,7 +108,7 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
   }
 
   private void testRequestWithNonPositiveAmount(double amount) {
-    postAccount(createAccount(1.0));
+    postAccount(createAccount(BigDecimal.valueOf(1.0)));
 
     String amountString = String.valueOf(amount);
 
@@ -124,7 +126,7 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
 
   @Test
   public void return422WhenRequestedAmountIsInvalidString() {
-    postAccount(createAccount(1.0));
+    postAccount(createAccount(BigDecimal.valueOf(1.0)));
 
     String invalidAmount = "eleven";
 
@@ -142,17 +144,17 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
 
   @Test
   public void return422WhenAccountIsClosed() {
-    return422WhenAccountIsEffectivelyClosed(0.00);
+    return422WhenAccountIsEffectivelyClosed(new BigDecimal("0.00"));
   }
 
   @Test
   public void return422WhenAccountIsEffectivelyClosed() {
     // will be rounded to 0.00 (2 decimal places) when compared to zero
-    return422WhenAccountIsEffectivelyClosed(0.004987654321);
+    return422WhenAccountIsEffectivelyClosed(new BigDecimal("0.004987654321"));
   }
 
-  private void return422WhenAccountIsEffectivelyClosed(double remainingAmount) {
-    Account account = createAccount(remainingAmount + 1).withRemaining(remainingAmount);
+  private void return422WhenAccountIsEffectivelyClosed(BigDecimal remainingAmount) {
+    Account account = createAccount(remainingAmount.add(BigDecimal.valueOf(1))).withRemaining(remainingAmount);
     account.getStatus().setName(FeeFineStatus.CLOSED.getValue());
     postAccount(account);
 
@@ -172,8 +174,7 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
 
   @Test
   public void longDecimalsAreHandledCorrectlyAndAccountIsClosed() {
-    double accountBalanceBeforeAction = 1.004987654321;
-    final Account account = createAccount(accountBalanceBeforeAction);
+    final Account account = createAccount(new BigDecimal("1.004987654321"));
     postAccount(account);
 
     String requestedAmountString = "1.004123456789";
@@ -205,8 +206,7 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
 
   @Test
   public void longDecimalsAreHandledCorrectly() {
-    double accountBalanceBeforeAction = 1.23987654321; // should be rounded to 1.24
-    final Account account = createAccount(accountBalanceBeforeAction);
+    final Account account = createAccount(new BigDecimal("1.23987654321"));
     postAccount(account);
 
     String requestedAmountString = "1.004987654321"; // should be rounded to 1.00
@@ -251,7 +251,7 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
     double requestedAmount = terminalAction ? accountBalanceBefore : accountBalanceBefore - 1.0;
     double expectedAccountBalanceAfter = accountBalanceBefore - requestedAmount;
 
-    final Account account = createAccount(accountBalanceBefore);
+    final Account account = createAccount(new BigDecimal("3.45"));
     postAccount(account);
 
     String expectedPaymentStatus = terminalAction ? action.getFullResult() : action.getPartialResult();
@@ -298,7 +298,7 @@ public class AccountsPayWaiveTransferAPITests extends ActionsAPITests {
         requestedAmount, expectedAccountBalanceAfter)));
   }
 
-  private Account createAccount(double amount) {
+  private Account createAccount(BigDecimal amount) {
     return new Account()
       .withId(ACCOUNT_ID)
       .withOwnerId(randomId())

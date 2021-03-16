@@ -15,7 +15,8 @@
     },
     "defaultAmount": {
       "description": "Amount of fee or fine, which may be overridden. ",
-      "type": "number"
+      "javaType": "java.math.BigDecimal",
+      "type": "object"
     },
     "chargeNoticeId": {
       "description": "ID of the charge notice template",

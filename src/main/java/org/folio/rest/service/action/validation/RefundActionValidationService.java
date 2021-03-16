@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.folio.rest.domain.MonetaryValue;
 import org.folio.rest.exception.FailedValidationException;
 import org.folio.rest.jaxrs.model.Account;
-import org.folio.rest.jaxrs.model.Feefineaction;
 import org.folio.rest.repository.FeeFineActionRepository;
 
 import io.vertx.core.Context;
@@ -35,7 +34,7 @@ public class RefundActionValidationService extends ActionValidationService {
     return feeFineActionRepository.findRefundableActionsForAccounts(accountIds)
       .map(actions -> new MonetaryValue(
         actions.stream()
-          .mapToDouble(Feefineaction::getAmountAction)
+          .mapToDouble(action -> action.getAmountAction().doubleValue())
           .sum()
       ));
   }

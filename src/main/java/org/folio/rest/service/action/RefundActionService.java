@@ -52,7 +52,7 @@ public class RefundActionService extends ActionService {
       .collect(groupingBy(
         Feefineaction::getAccountId,
         collectingAndThen(
-          summingDouble(Feefineaction::getAmountAction),
+          summingDouble(feeFineAction -> feeFineAction.getAmountAction().doubleValue()),
           MonetaryValue::new
         )));
 
@@ -74,12 +74,12 @@ public class RefundActionService extends ActionService {
     Account account, MonetaryValue refundAmount, List<Feefineaction> refundableFeeFineActions) {
 
     double refundableAmountDouble = refundableFeeFineActions.stream()
-      .mapToDouble(Feefineaction::getAmountAction)
+      .mapToDouble(feeFineAction -> feeFineAction.getAmountAction().doubleValue())
       .sum();
 
     double paidAmountDouble = refundableFeeFineActions.stream()
       .filter(ffa -> PAY.isActionForResult(ffa.getTypeAction()))
-      .mapToDouble(Feefineaction::getAmountAction)
+      .mapToDouble(feeFineAction -> feeFineAction.getAmountAction().doubleValue())
       .sum();
 
     MonetaryValue refundableAmount = new MonetaryValue(refundableAmountDouble);
@@ -118,12 +118,12 @@ public class RefundActionService extends ActionService {
 
     String actionType = action.getResult(isFullAction);
 
-    account.setRemaining(remainingAmountAfter.toDouble());
+    account.setRemaining(remainingAmountAfter.getAmount());
     account.getPaymentStatus().setName(actionType);
 
     Feefineaction feeFineAction = new Feefineaction()
       .withTypeAction(actionType)
-      .withAmountAction(amount.toDouble())
+      .withAmountAction(amount.getAmount())
       .withBalance(account.getRemaining())
       .withComments(request.getComments())
       .withNotify(request.getNotifyPatron())

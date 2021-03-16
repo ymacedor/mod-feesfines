@@ -224,7 +224,7 @@ public class RefundReportService {
       reportEntry
         .withFeeFineId(accountId)
         .withRefundDate(formatDate(feeFineAction.getDateAction(), ctx.timeZone))
-        .withRefundAmount(formatMonetaryValue(feeFineAction.getAmountAction()))
+        .withRefundAmount(formatMonetaryValue(feeFineAction.getAmountAction().doubleValue()))
         .withRefundAction(feeFineAction.getTypeAction())
         .withRefundReason(feeFineAction.getPaymentMethod())
         .withStaffInfo(getStaffInfo(feeFineAction.getComments()))
@@ -248,7 +248,7 @@ public class RefundReportService {
       if (account != null) {
         reportEntry
           .withFeeFineType(account.getFeeFineType())
-          .withBilledAmount(formatMonetaryValue(account.getAmount()))
+          .withBilledAmount(formatMonetaryValue(account.getAmount().doubleValue()))
           .withDateBilled(formatDate(account.getMetadata().getCreatedDate(), ctx.timeZone))
           .withFeeFineOwner(account.getFeeFineOwner());
       } else {

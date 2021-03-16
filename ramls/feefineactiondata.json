@@ -23,11 +23,13 @@
     },
     "amountAction": {
       "description": "Amount of activity",
-      "type": "number"
+      "javaType": "java.math.BigDecimal",
+      "type": "object"
     },
     "balance": {
       "description": "Calculated amount of remaining balance based on original fee/fine and what has been paid/waived/tranferred/refunded",
-      "type": "number"
+      "javaType": "java.math.BigDecimal",
+      "type": "object"
     },
     "transactionInformation": {
       "description": "Number or other transaction id related to payment",

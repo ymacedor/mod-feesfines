@@ -13,6 +13,9 @@ import org.folio.rest.utils.ResourceClient;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class AccountsActionCheckBulkRefundAPITests extends AccountsActionChecksAPITestsBase {
 
   private static final ResourceClient accountsBulkCheckRefundClient = buildAccountBulkCheckRefundClient();
@@ -27,12 +30,13 @@ public class AccountsActionCheckBulkRefundAPITests extends AccountsActionChecksA
 
   @Test
   public void checkRefundAmountShouldBeAllowed() {
-    double expectedRemainingAmount = 0.77;
+    BigDecimal expectedRemainingAmount = new BigDecimal("0.77");
+    BigDecimal requestedAmount = new BigDecimal(REQUESTED_AMOUNT);
 
     final Feefineaction feeFineAction = new Feefineaction()
       .withAccountId(firstAccount.getId())
       .withUserId(firstAccount.getUserId())
-      .withAmountAction((REQUESTED_AMOUNT + expectedRemainingAmount) / 2);
+      .withAmountAction((requestedAmount.add(expectedRemainingAmount)).divide(BigDecimal.valueOf(2), RoundingMode.HALF_EVEN));
 
     buildFeeFineActionsClient()
       .post(feeFineAction.withTypeAction(PAY.getPartialResult()))

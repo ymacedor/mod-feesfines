@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableWithSize.iterableWithSize;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,6 +105,8 @@ public class FeeFineReportsAPITest extends ApiTests {
   private static final String SEE_FEE_FINE_PAGE = "See Fee/fine details page";
 
   private static final String FEE_FINE_OWNER = "owner";
+
+  private static final BigDecimal DEFAULT_CHARGE_AMOUNT = new BigDecimal("10.0");
 
   private static final DateTimeFormatter dateTimeFormatter =
     DateTimeFormat.forPattern("M/d/yy, h:mm a");
@@ -184,7 +187,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void emptyReportWhenRefundedAfterEndDate() {
-    Account account = charge(10.0, "ff-type", null);
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", null);
 
     createAction(1, account, "2020-01-02 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -304,7 +307,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void partiallyRefundedWithNoItem() {
-    Account account = charge(10.0, "ff-type", null);
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", null);
 
     createAction(1, account, "2020-01-02 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -329,7 +332,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void fullyRefundedTimeZoneTest() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 01:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -348,7 +351,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void multiplePaymentsSameMethodFullyRefunded() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.1, 6.9, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -370,7 +373,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void refundActionWithoutComments() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 12:00:00", PAID_FULLY, PAYMENT_METHOD,
       10.0, 0.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -387,7 +390,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void multiplePaymentMethodsFullyRefunded() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.1, 6.9, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -410,7 +413,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void partiallyTransferredFullyRefunded() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -432,7 +435,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void partiallyTransferredFullyRefundedToPatron() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -454,7 +457,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void partiallyTransferredFullyRefundedToBursar() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     createAction(1, account, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -476,7 +479,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void multipleAccountMultipleRefunds() {
-    Account account1 = charge(10.0, "ff-type-1", item1.getId());
+    Account account1 = charge(DEFAULT_CHARGE_AMOUNT, "ff-type-1", item1.getId());
 
     createAction(1, account1, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.1, 6.9, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -500,7 +503,7 @@ public class FeeFineReportsAPITest extends ApiTests {
       REFUNDED_FULLY, REFUND_REASON, 9.0, 0.0, REFUND_STAFF_INFO, REFUND_PATRON_INFO,
       REFUND_TX_INFO);
 
-    Account account2 = charge(20.0, "ff-type-2", null);
+    Account account2 = charge(new BigDecimal("20.0"), "ff-type-2", null);
 
     createAction(1, account2, "2020-01-07 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       17.0, 3.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -509,7 +512,7 @@ public class FeeFineReportsAPITest extends ApiTests {
       REFUNDED_FULLY, REFUND_REASON, 17.0, 3.0, REFUND_STAFF_INFO, REFUND_PATRON_INFO,
       REFUND_TX_INFO);
 
-    Account account3 = charge(USER_ID_2, 20.0, "ff-type-3", item2.getId(), OWNER_ID_1);
+    Account account3 = charge(USER_ID_2, new BigDecimal("20.0"), "ff-type-3", item2.getId(), OWNER_ID_1);
 
     createAction(USER_ID_2, 1, account3, "2020-01-08 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       17.0, 3.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
@@ -540,7 +543,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void shouldFormReportOnlyForSpecificOwner() {
-    Account account1 = charge(USER_ID_1, 10.0, "ff-type-1", item1.getId(), OWNER_ID_1);
+    Account account1 = charge(USER_ID_1, DEFAULT_CHARGE_AMOUNT, "ff-type-1", item1.getId(), OWNER_ID_1);
     createAction(1, account1, "2020-01-01 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       3.1, 6.9, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
     createAction(2, account1, "2020-01-02 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
@@ -557,14 +560,14 @@ public class FeeFineReportsAPITest extends ApiTests {
       REFUNDED_FULLY, REFUND_REASON, 9.0, 0.0, REFUND_STAFF_INFO, REFUND_PATRON_INFO,
       REFUND_TX_INFO);
 
-    Account account2 = charge(USER_ID_1, 20.0, "ff-type-2", item2.getId(), OWNER_ID_2);
+    Account account2 = charge(USER_ID_1, new BigDecimal("20.0"), "ff-type-2", item2.getId(), OWNER_ID_2);
     createAction(1, account2, "2020-01-07 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       17.0, 3.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
     Feefineaction refundAction3 = createAction(1, account2, "2020-01-08 12:00:00",
       REFUNDED_FULLY, REFUND_REASON, 17.0, 3.0, REFUND_STAFF_INFO, REFUND_PATRON_INFO,
       REFUND_TX_INFO);
 
-    Account account3 = charge(USER_ID_2, 20.0, "ff-type-3", item2.getId(), OWNER_ID_1);
+    Account account3 = charge(USER_ID_2, new BigDecimal("20.0"), "ff-type-3", item2.getId(), OWNER_ID_1);
     createAction(USER_ID_2, 1, account3, "2020-01-08 12:00:00", PAID_PARTIALLY, PAYMENT_METHOD,
       17.0, 3.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO, PAYMENT_TX_INFO);
     Feefineaction refundAction4 = createAction(USER_ID_2, 1, account3, "2020-01-09 12:00:00",
@@ -602,7 +605,7 @@ public class FeeFineReportsAPITest extends ApiTests {
 
   @Test
   public void paymentInformationShouldBeIncludedWhenOrderOfActionsIsIncorrect() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     // Create the refund action first, before payment and transfer
     Feefineaction refundAction = createAction(1, account, "2020-01-03 12:00:00",
@@ -660,11 +663,11 @@ public class FeeFineReportsAPITest extends ApiTests {
         refundReportEntryMatcher(reportEntries.get(index))));
   }
 
-  private Account charge(Double amount, String feeFineType, String itemId) {
+  private Account charge(BigDecimal amount, String feeFineType, String itemId) {
     return charge(USER_ID_1, amount, feeFineType, itemId, randomId());
   }
 
-  private Account charge(String userID, Double amount, String feeFineType,
+  private Account charge(String userID, BigDecimal amount, String feeFineType,
     String itemId, String ownerId) {
 
     final var account = EntityBuilder.buildAccount(userID, itemId, feeFineType, amount, ownerId);
@@ -674,7 +677,7 @@ public class FeeFineReportsAPITest extends ApiTests {
   }
 
   private ReportSourceObjects createMinimumViableReportData() {
-    Account account = charge(10.0, "ff-type", item1.getId());
+    Account account = charge(DEFAULT_CHARGE_AMOUNT, "ff-type", item1.getId());
 
     Feefineaction payment = createAction(1, account, "2020-01-01 12:00:00",
       PAID_PARTIALLY, PAYMENT_METHOD, 3.0, 7.0, PAYMENT_STAFF_INFO, PAYMENT_PATRON_INFO,
@@ -756,7 +759,7 @@ public class FeeFineReportsAPITest extends ApiTests {
       .withPatronId(user.getId())
       .withPatronGroup(userGroup.getGroup())
       .withFeeFineType(account.getFeeFineType())
-      .withBilledAmount(formatMonetaryValue(account.getAmount()))
+      .withBilledAmount(formatMonetaryValue(account.getAmount().doubleValue()))
       .withDateBilled(formatRefundReportDate(account.getMetadata().getCreatedDate(), TENANT_TZ))
       .withPaidAmount(paidAmount)
       .withPaymentMethod(paymentMethod)
@@ -765,7 +768,7 @@ public class FeeFineReportsAPITest extends ApiTests {
       .withTransferAccount(transferAccount)
       .withFeeFineId(account.getId())
       .withRefundDate(formatRefundReportDate(refundAction.getDateAction(), TENANT_TZ))
-      .withRefundAmount(formatMonetaryValue(refundAction.getAmountAction()))
+      .withRefundAmount(formatMonetaryValue(refundAction.getAmountAction().doubleValue()))
       .withRefundAction(refundAction.getTypeAction())
       .withRefundReason(refundAction.getPaymentMethod())
       .withStaffInfo(staffInfo)

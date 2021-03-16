@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -153,8 +154,8 @@ public class PatronNoticeBuilderTest {
   @Test
   public void useFallbackValuesFromAccountForItemContext() {
     final Account account = new Account()
-      .withAmount(10.0)
-      .withRemaining(4.56)
+      .withAmount(new BigDecimal("10.0"))
+      .withRemaining(new BigDecimal("4.56"))
       .withBarcode("Account-level barcode")
       .withTitle("Account-level title")
       .withCallNumber("Account-level call number")
@@ -231,8 +232,8 @@ public class PatronNoticeBuilderTest {
     return new Feefineaction()
       .withTypeAction("Paid partially")
       .withDateAction(new Date())
-      .withAmountAction(4.45)
-      .withBalance(8.55)
+      .withAmountAction(new BigDecimal("4.45"))
+      .withBalance(new BigDecimal("8.55"))
       .withPaymentMethod("Cash")
       .withComments("STAFF : staff comment \n PATRON : " + ACTION_COMMENT_FOR_PATRON);
   }
@@ -241,8 +242,8 @@ public class PatronNoticeBuilderTest {
     return new Feefineaction()
       .withTypeAction("Book lost")
       .withDateAction(new Date())
-      .withAmountAction(Double.valueOf(ACTION_AMOUNT))
-      .withBalance(Double.valueOf(ACCOUNT_REMAINING))
+      .withAmountAction(new BigDecimal(ACTION_AMOUNT))
+      .withBalance(new BigDecimal(ACCOUNT_REMAINING))
       .withComments("STAFF : staff comment \n PATRON : " + CHARGE_COMMENT_FOR_PATRON);
   }
 
@@ -270,8 +271,8 @@ public class PatronNoticeBuilderTest {
       .withFeeFineOwner("Owner")
       .withFeeFineType("Fine type")
       .withMaterialType("book")
-      .withAmount(Double.valueOf(ACCOUNT_AMOUNT))
-      .withRemaining(Double.valueOf(ACCOUNT_REMAINING))
+      .withAmount(new BigDecimal(ACCOUNT_AMOUNT))
+      .withRemaining(new BigDecimal(ACCOUNT_REMAINING))
       .withMetadata(new Metadata().withCreatedDate(new Date()));
   }
 

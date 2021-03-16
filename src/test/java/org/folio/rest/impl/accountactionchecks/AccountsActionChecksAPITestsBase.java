@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -135,7 +136,7 @@ public class AccountsActionChecksAPITestsBase extends ApiTests {
   private void closeAllAccounts() {
     Stream.of(firstAccount, secondAccount)
       .forEach(account -> {
-        account.setRemaining(0.00);
+        account.setRemaining(new BigDecimal("0.00"));
         account.getStatus().setName(FeeFineStatus.CLOSED.getValue());
         accountsClient.update(account.getId(), account);
       });
@@ -143,7 +144,7 @@ public class AccountsActionChecksAPITestsBase extends ApiTests {
 
 
   protected void successfulActionCheckHandlesLongDecimalsCorrectly(ResourceClient client) {
-    firstAccount.setRemaining(1.235987654321); // will be rounded to 1.24
+    firstAccount.setRemaining(new BigDecimal("1.235987654321")); // will be rounded to 1.24
     accountsClient.update(firstAccount.getId(), firstAccount);
 
     client.attemptCreate(new CheckActionRequest().withAmount("1.004987654321")) // rounded to 1.00
@@ -157,7 +158,7 @@ public class AccountsActionChecksAPITestsBase extends ApiTests {
   }
 
   protected void failedActionCheckReturnsInitialRequestedAmount(ResourceClient client) {
-    firstAccount.setRemaining(0.99);
+    firstAccount.setRemaining(new BigDecimal("0.99"));
     accountsClient.update(firstAccount.getId(), firstAccount);
 
     String requestedAmount = "1.004123456789"; // rounded to 1.00 when compared to account balance

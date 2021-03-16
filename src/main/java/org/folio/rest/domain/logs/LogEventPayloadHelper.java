@@ -84,13 +84,13 @@ public class LogEventPayloadHelper {
     JsonObject json = new JsonObject();
 
     ofNullable(action).ifPresent(act -> {
-      write(json, AMOUNT.value(), act.getAmountAction());
+      write(json, AMOUNT.value(), act.getAmountAction().toPlainString());
       write(json, SOURCE.value(), act.getSource());
       write(json, SERVICE_POINT_ID.value(), act.getCreatedAt());
       write(json, DATE.value(), DateTime.now());
       if (isAction(act)) {
         write(json, ACTION.value(), act.getTypeAction());
-        write(json, BALANCE.value(), act.getBalance());
+        write(json, BALANCE.value(), act.getBalance().toPlainString());
         write(json, PAYMENT_METHOD.value(), act.getPaymentMethod());
         write(json, COMMENTS.value(), act.getComments());
       } else if (STAFF_INFO_ONLY.equalsIgnoreCase(act.getTypeAction())) {

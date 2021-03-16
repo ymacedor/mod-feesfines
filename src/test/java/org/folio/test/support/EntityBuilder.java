@@ -3,6 +3,7 @@ package org.folio.test.support;
 import static java.lang.String.format;
 import static org.folio.test.support.ApiTests.randomId;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -56,7 +57,7 @@ public class EntityBuilder {
   }
 
   public static Account buildAccount(String userId, String itemId, String feeFineType,
-    Double amount, String ownerId) {
+    BigDecimal amount, String ownerId) {
 
     return new Account()
       .withId(randomId())
@@ -85,8 +86,8 @@ public class EntityBuilder {
       .withFeeFineId(randomId())
       .withFeeFineType("book lost")
       .withFeeFineOwner("owner")
-      .withAmount(9.00)
-      .withRemaining(4.55)
+      .withAmount(new BigDecimal("9.00"))
+      .withRemaining(new BigDecimal("4.55"))
       .withPaymentStatus(new PaymentStatus().withName("Outstanding"))
       .withStatus(new Status().withName("Open"));
   }
@@ -95,10 +96,10 @@ public class EntityBuilder {
     return buildAccount().withId(accountId);
   }
 
-  public static Account buildAccount(double amount, double remaining) {
+  public static Account buildAccount(Double amount, Double remaining) {
     return buildAccount()
-      .withAmount(amount)
-      .withRemaining(remaining);
+      .withAmount(new BigDecimal(amount.toString()))
+      .withRemaining(new BigDecimal(remaining.toString()));
   }
 
   public static Feefineaction buildFeeFineAction(String userId, String accountId, String type,
@@ -111,8 +112,8 @@ public class EntityBuilder {
       .withTypeAction(type)
       .withPaymentMethod(paymentMethod)
       .withAccountId(accountId)
-      .withAmountAction(amount)
-      .withBalance(balance)
+      .withAmountAction(new BigDecimal(amount.toString()))
+      .withBalance(new BigDecimal(balance.toString()))
       .withDateAction(date)
       .withComments(format("STAFF : %s \n PATRON : %s", commentForStaff, commentForPatron));
   }
@@ -126,8 +127,8 @@ public class EntityBuilder {
       .withTypeAction(type)
       .withPaymentMethod(paymentMethod)
       .withAccountId(accountId)
-      .withAmountAction(amount)
-      .withBalance(balance)
+      .withAmountAction(new BigDecimal(amount.toString()))
+      .withBalance(new BigDecimal(balance.toString()))
       .withDateAction(date);
   }
 

@@ -5,6 +5,7 @@ import static org.folio.rest.domain.EventType.LOAN_RELATED_FEE_FINE_CLOSED;
 import static org.folio.rest.domain.LoanRelatedFeeFineClosedEvent.forFeeFine;
 import static org.folio.rest.utils.JsonHelper.write;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,7 +36,7 @@ public class AccountEventPublisher {
   public void publishDeletedAccountBalanceChangeEvent(String accountId) {
     final Account account = new Account()
       .withId(accountId)
-      .withRemaining(0.0);
+      .withRemaining(new BigDecimal("0.0"));
 
     publishAccountBalanceChangeEvent(account);
   }
@@ -50,7 +51,7 @@ public class AccountEventPublisher {
     write(payload, "userId", account.getUserId());
     write(payload, "feeFineId", account.getId());
     write(payload, "feeFineTypeId", account.getFeeFineId());
-    write(payload, "balance", account.getRemaining());
+    write(payload, "balance", account.getRemaining().toPlainString());
     if (UuidUtil.isUuid(account.getLoanId())) {
       write(payload, "loanId", account.getLoanId());
     }

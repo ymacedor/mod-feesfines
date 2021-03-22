@@ -46,7 +46,7 @@
           "tOps": "ADD"
         },
         {
-          "fieldName": "userId, status.name",
+          "fieldName": "status.name",
           "tOps": "ADD"
         }
       ]

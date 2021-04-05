@@ -1,6 +1,7 @@
 package org.folio.rest.service.report;
 
 import static java.math.BigDecimal.ZERO;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.folio.rest.domain.Action.PAY;
 import static org.folio.rest.repository.FeeFineActionRepository.ORDER_BY_OWNER_SOURCE_ASC;
 import static org.folio.rest.utils.AccountHelper.getPatronInfoFromComment;
@@ -173,7 +174,7 @@ public class CashDrawerReconciliationReportService extends DateBasedReportServic
 
   public CompositeFuture resolveSources() {
     return CompositeFuture.all(sourceIds.stream().map(userId -> usersClient.fetchUserById(userId)
-      .map(User::getUsername)
+      .map(this::getPersonalName)
       .map(sources::add)
       .mapEmpty())
       .collect(Collectors.toList()));
@@ -181,5 +182,18 @@ public class CashDrawerReconciliationReportService extends DateBasedReportServic
 
   private String formatMonetaryValue(Double value) {
     return new MonetaryValue(value, currency).toString();
+  }
+
+  public String getPersonalName(User user) {
+    if (isNotBlank(user.getPersonal().getFirstName()) &&
+      isNotBlank(user.getPersonal().getLastName())) {
+
+      return String.format("%s, %s", user.getPersonal().getLastName(),
+        user.getPersonal().getFirstName());
+    }
+    else {
+      //Fallback to user name if insufficient personal details
+      return user.getUsername();
+    }
   }
 }

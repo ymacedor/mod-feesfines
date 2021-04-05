@@ -153,9 +153,6 @@ public class FeeFineActionRepository {
     Action typeAction, String startDate, String endDate, List<String> ownerIds, String createdAt,
     List<String> sources, String orderBy, int limit) {
 
-//    Tuple params = Tuple.of(limit, typeAction.getFullResult(), typeAction.getPartialResult(),
-//      startDate, endDate);
-
     Tuple params = Tuple.of(limit);
     List<String> conditions = new ArrayList<>();
 

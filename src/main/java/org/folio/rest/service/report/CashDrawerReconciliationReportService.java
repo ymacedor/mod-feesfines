@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.folio.rest.client.UsersClient;
 import org.folio.rest.domain.MonetaryValue;
 import org.folio.rest.jaxrs.model.Account;
 import org.folio.rest.jaxrs.model.CashDrawerReconciliationReport;
@@ -22,9 +23,11 @@ import org.folio.rest.jaxrs.model.CashDrawerReconciliationReportEntry;
 import org.folio.rest.jaxrs.model.Feefineaction;
 import org.folio.rest.jaxrs.model.ReportStats;
 import org.folio.rest.jaxrs.model.ReportTotalsEntry;
+import org.folio.rest.jaxrs.model.User;
 import org.folio.rest.repository.FeeFineActionRepository;
 import org.joda.time.DateTime;
 
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 
@@ -34,11 +37,13 @@ public class CashDrawerReconciliationReportService extends DateBasedReportServic
   private static final int REPORT_ROWS_LIMIT = 1_000_000;
 
   private final FeeFineActionRepository feeFineActionRepository;
+  private final UsersClient usersClient;
 
   // Report parameters
   private final DateTime startDate;
   private final DateTime endDate;
   private final String createdAt;
+  private final List<String> sourceIds;
   private final List<String> sources;
 
   public CashDrawerReconciliationReportService(Map<String, String> headers, Context context,
@@ -47,16 +52,18 @@ public class CashDrawerReconciliationReportService extends DateBasedReportServic
     super(headers, context);
 
     feeFineActionRepository = new FeeFineActionRepository(headers, context);
+    usersClient = new UsersClient(context.owner(), headers);
 
     this.startDate = startDate;
     this.endDate = endDate;
     this.createdAt = createdAt;
-    this.sources = sources;
+    this.sourceIds = sources;
+    this.sources = new ArrayList<>();
   }
 
   public Future<CashDrawerReconciliationReport> build() {
-
     return adjustDates(startDate, endDate)
+      .compose(v -> resolveSources())
       .compose(v -> buildWithAdjustedDates());
   }
 
@@ -162,6 +169,14 @@ public class CashDrawerReconciliationReportService extends DateBasedReportServic
       .withTotalCount(String.valueOf(actions.stream()
         .filter(action -> categories.contains(categoryNameFunction.apply(action)))
         .count())));
+  }
+
+  public CompositeFuture resolveSources() {
+    return CompositeFuture.all(sourceIds.stream().map(userId -> usersClient.fetchUserById(userId)
+      .map(User::getUsername)
+      .map(sources::add)
+      .mapEmpty())
+      .collect(Collectors.toList()));
   }
 
   private String formatMonetaryValue(Double value) {
